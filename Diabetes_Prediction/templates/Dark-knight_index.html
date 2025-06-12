@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diabetes Risk Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            color: #555;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .result {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Diabetes Risk Prediction</h1>
+        <label for="age">Age of the patient (normalized):</label>
+        <input type="number" id="age" step="0.01">
+
+        <label for="sex">Sex of the patient (normalized):</label>
+        <input type="number" id="sex" step="0.01">
+
+        <label for="bmi">Body Mass Index (BMI):</label>
+        <input type="number" id="bmi" step="0.01">
+
+        <label for="bp">Average Blood Pressure (mm Hg):</label>
+        <input type="number" id="bp" step="0.01">
+
+        <label for="s1">Cholesterol level in blood:</label>
+        <input type="number" id="s1" step="0.01">
+
+        <label for="s2">LDL:</label>
+        <input type="number" id="s2" step="0.01">
+
+        <label for="s3">HDL:</label>
+        <input type="number" id="s3" step="0.01">
+
+        <label for="s4">Total cholesterol or HDL ratio:</label>
+        <input type="number" id="s4" step="0.01">
+
+        <label for="s5">Level of triglycerides in blood:</label>
+        <input type="number" id="s5" step="0.01">
+
+        <label for="s6">Normalized glycated hemoglobin level:</label>
+        <input type="number" id="s6" step="0.01">
+
+        <button onclick="predictRisk()">Predict Risk</button>
+
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        function predictRisk() {
+            const data = {
+                age: parseFloat(document.getElementById('age').value),
+                sex: parseFloat(document.getElementById('sex').value),
+                bmi: parseFloat(document.getElementById('bmi').value),
+                bp: parseFloat(document.getElementById('bp').value),
+                s1: parseFloat(document.getElementById('s1').value),
+                s2: parseFloat(document.getElementById('s2').value),
+                s3: parseFloat(document.getElementById('s3').value),
+                s4: parseFloat(document.getElementById('s4').value),
+                s5: parseFloat(document.getElementById('s5').value),
+                s6: parseFloat(document.getElementById('s6').value)
+            };
+
+            fetch('http://127.0.0.1:5000/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                document.getElementById('result').innerHTML = `
+                    <p><strong>Scaled Prediction:</strong> ${result.scaled_prediction.toFixed(4)}</p>
+                    <p><strong>Unscaled Prediction:</strong> ${result.unscaled_prediction.toFixed(4)}</p>
+                `;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('result').innerText = 'An error occurred while predicting.';
+            });
+        }
+    </script>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-analytics.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+      
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+          apiKey: "AIzaSyDPPdu7tuPKOWA1ASMXFVd08eYFkSMcmFQ",
+          authDomain: "dark-knight-project.firebaseapp.com",
+          projectId: "dark-knight-project",
+          storageBucket: "dark-knight-project.firebasestorage.app",
+          messagingSenderId: "575439139432",
+          appId: "1:575439139432:web:98a84eb66f6fbb19f941dd",
+          measurementId: "G-XDZJLP825K"
+        };
+      
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+      </script>
+</body>
+</html>
